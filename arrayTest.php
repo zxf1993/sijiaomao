@@ -1,6 +1,6 @@
 <?php
 /**
- * 第一题
+ * 第一题、截取最后一个/之前的字符，相同的后两个元素相加
  */
 $items = array(
 	array('http://www.abc.com/a/', 100, 120),
@@ -32,41 +32,43 @@ var_dump($result);
  * @param  int $m [第几位踢出]
  */
 function king($n, $m){
+	if ($n <2) {
+		return $n;
+	}
 	$monkey_arr = range(1, $n);
 	$i = 0;
 	while (count($monkey_arr)>1) {
-		$number = $monkey_arr[$i];
-		unset($monkey_arr[$i]);
+		$number = array_shift($monkey_arr);
 		if (($i+1)%$m != 0) {
 			array_push($monkey_arr, $number);
 		}
 		$i++;
 	}
-	return $monkey_arr[$i];
+	return $monkey_arr[0];
 }
 
 $king = king(3,3);
-echo $king;
+echo $king;die;
 
 
 /**
- * 第三题
+ * 第三题，每题得分是5分，那么这个同学得分是多少？
  */
 // 得分计算，已知道选题提交的答案是
 $commits = 'A,B,B,A,C,C,D,A,B,C,D,C,C,C,D,A,B,C,D,A';
 // 实际的答案是：
 $answers = 'A,A,B,A,D,C,D,A,A,C,C,D,C,D,A,B,C,D,C,D';
-// 每题得分是5分，那么这个同学得分是多少？
+
 $commits_arr = explode(',', $commits);
 $answers_arr = explode(',', $answers);
 //按索引取两数组差集
-$result = array_diff_assoc($commits_arr,$answers_arr);
-$point  = (count($commits_arr) - count($result)) * 5;
+$result = array_intersect_assoc($commits_arr,$answers_arr);
+$point  = count($result) * 5;
 echo "得分为：" . $point,PHP_EOL;
 
 
 /**
- * 第四道
+ * 第四道、使用php://input接收参数存入文件后，读取缓存
  */
 $post_data = file_get_contents('php://input');
 if (!isset($post_data['uid']) || empty($post_data['uid'])) {
@@ -149,10 +151,11 @@ print_r($obj);
 
 
 /**
- * 第六题1000个小白鼠
+ * 第六题1000瓶水只有一瓶水有毒，最少需要几只小白鼠
  */
 // 1111101000是1000的二进制，所以需要10个小白鼠，每个小白鼠代表其中一位，编号1-10，1喝，0不喝，最后看哪几只死了，然后转为10进制
 // 例如是第一号水，2进制为0000000001，这时候只有10号小白鼠喝了这瓶水，其他没有喝，如果只有10号小白鼠死了，证明一号有毒
+// 因为只有一瓶水有毒，所以小白鼠死亡的编号结果是唯一的，10只小白鼠最多可以判断1024瓶水是否有毒
 
 /**
  * 第七题、使用serialize序列化一个对象，并使用__sleep和__wakeup方法。
@@ -189,3 +192,26 @@ while (!empty($arr)) {
 	$result .= array_pop($arr);
 }
 echo $result;
+
+
+/**
+ * 第九题、11, 18, 12, 1, -2, 20, 8, 10, 7, 6中取出所有和为18的组合
+ */
+$k           = 18;
+$array       = [11, 18, 12, 1, -2, 20, 8, 10, 7, 6];
+$count       = count($array);
+$group_count = 2<<9;
+//10个数做组合会出现1024种情况
+for ($i=1; $i <= $group_count; $i++) { 
+	$item     = decbin($i);
+	$item     = sprintf('%010s', $item);
+	$item_arr = [];
+	for ($j=0; $j < $count; $j++) { 
+		if ($item[$j] == 1) {
+			$item_arr[] = $array[$j];
+		}
+	}
+	if (array_sum($item_arr) == $k) {
+		echo implode(',', $item_arr),PHP_EOL;
+	}
+}
